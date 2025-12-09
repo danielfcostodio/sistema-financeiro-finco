@@ -110,6 +110,9 @@ function renderizarTabela(lancamentos) {
     
     contador.textContent = `${lancamentos.length} registros`;
     
+    // Calcular previsão
+    calcularPrevisao(lancamentos);
+    
     if (lancamentos.length === 0) {
         tbody.innerHTML = `
             <tr><td colspan="8" class="text-center text-muted">Nenhum lançamento encontrado</td></tr>
@@ -122,9 +125,6 @@ function renderizarTabela(lancamentos) {
         const tipoBadgeClass = l.tipo === 'ENTRADA' ? 'entrada' : 'saida';
         const situacaoClasse = obterClasseSituacao(l.situacao);
         const situacaoLabel = obterLabelSituacao(l.situacao);
-        
-        // Debug - remover depois
-        console.log(`ID ${l.id}: situacao="${l.situacao}" -> label="${situacaoLabel}"`);
         
         return `
         <tr data-id="${l.id}">
@@ -434,4 +434,36 @@ function exportarExcel() {
     
     const url = `${API_URL}/lancamentos/exportar/excel?${params.toString()}`;
     window.open(url, '_blank');
+}
+
+// ============================================
+// CALCULAR PREVISÃO
+// ============================================
+
+function calcularPrevisao(lancamentos) {
+    // Filtrar apenas lançamentos não obsoletos
+    const lancamentosAtivos = lancamentos.filter(l => l.situacao !== 'OBSOLETO');
+    
+    // Calcular totais
+    const totalEntradas = lancamentosAtivos
+        .filter(l => l.tipo === 'ENTRADA')
+        .reduce((sum, l) => sum + l.valor, 0);
+    
+    const totalSaidas = lancamentosAtivos
+        .filter(l => l.tipo === 'SAIDA')
+        .reduce((sum, l) => sum + l.valor, 0);
+    
+    const saldo = totalEntradas - totalSaidas;
+    
+    // Atualizar elementos
+    const elEntradas = document.getElementById('previsao-entradas');
+    const elSaidas = document.getElementById('previsao-saidas');
+    const elSaldo = document.getElementById('previsao-saldo');
+    
+    if (elEntradas) elEntradas.textContent = formatarMoeda(totalEntradas);
+    if (elSaidas) elSaidas.textContent = formatarMoeda(totalSaidas);
+    if (elSaldo) {
+        elSaldo.textContent = formatarMoeda(saldo);
+        elSaldo.className = 'previsao-valor ' + (saldo >= 0 ? 'positivo' : 'negativo');
+    }
 }
