@@ -916,3 +916,53 @@ select.form-control {
 .gap-2 { gap: 16px; }
 .justify-between { justify-content: space-between; }
 .align-center { align-items: center; }
+
+/* ============================================
+   PREVISÃO (LANÇAMENTOS)
+   ============================================ */
+.previsao-container {
+    background: var(--cor-branco);
+    border-radius: var(--border-radius);
+    padding: 16px 20px;
+    box-shadow: var(--sombra-card);
+}
+
+.previsao-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.previsao-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.previsao-label {
+    font-weight: 600;
+    color: var(--cor-texto-claro);
+    font-size: 0.9rem;
+}
+
+.previsao-valor {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.previsao-valor.positivo {
+    color: var(--cor-sucesso);
+}
+
+.previsao-valor.negativo {
+    color: var(--cor-perigo);
+}
+
+@media (max-width: 768px) {
+    .previsao-grid {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
