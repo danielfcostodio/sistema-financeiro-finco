@@ -15,7 +15,6 @@ from backend.database import (
     Lancamento, Classificacao, ItemFornecedor, SaldoDiario, ResumoMensal, 
     Configuracao, Usuario, SessionLocal
 )
-from backend.importador import ImportadorPlanilha
 import hashlib
 import pandas as pd
 import tempfile
