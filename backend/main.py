@@ -11,8 +11,9 @@ from pydantic import BaseModel
 from typing import Optional, List
 from datetime import date, datetime
 from backend.database import (
-    SessionLocal, Lancamento, Classificacao, Usuario, Config,
-    Base, engine
+    get_db, criar_tabelas, inicializar_configuracoes, inicializar_classificacoes,
+    Lancamento, Classificacao, ItemFornecedor, SaldoDiario, ResumoMensal, 
+    Configuracao, Usuario, SessionLocal
 )
 from backend.importador import ImportadorPlanilha
 import hashlib
