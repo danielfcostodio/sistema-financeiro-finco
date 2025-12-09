@@ -22,15 +22,24 @@ document.addEventListener('DOMContentLoaded', () => {
 async function carregarFluxoCaixa() {
     const ano = document.getElementById('filtro-ano').value;
     const mes = document.getElementById('filtro-mes').value;
+    const dia = document.getElementById('filtro-dia').value;
     
     try {
-        // Buscar lançamentos BAIXADOS do mês
-        const lancamentos = await getLancamentos({
+        // Montar filtros
+        const filtros = {
             ano: ano,
             mes: mes,
             situacao: 'BAIXADA',
             limit: 1000
-        });
+        };
+        
+        // Adicionar filtro de dia se selecionado
+        if (dia) {
+            filtros.dia = dia;
+        }
+        
+        // Buscar lançamentos BAIXADOS
+        const lancamentos = await getLancamentos(filtros);
         
         // Buscar saldo inicial do mês (resumo do mês anterior)
         let saldoInicial = 0;
