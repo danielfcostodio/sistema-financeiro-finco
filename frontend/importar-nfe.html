@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Importar NFe - Sistema Financeiro Finco</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- MENU LATERAL -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="assets/logo-finco.png" alt="Finco" class="logo" onerror="this.style.display='none'">
+            <h2>Sistema Financeiro</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="index.html"><span class="icon">📊</span> Dashboard</a>
+            <a href="lancamentos.html"><span class="icon">💰</span> Lançamentos</a>
+            <a href="contas.html"><span class="icon">📅</span> Contas</a>
+            <a href="fluxo-caixa.html"><span class="icon">📈</span> Fluxo de Caixa</a>
+            <a href="relatorios.html"><span class="icon">📋</span> Relatórios</a>
+            <a href="importar-nfe.html" class="active"><span class="icon">📄</span> Importar NFe</a>
+            <a href="configuracoes.html"><span class="icon">⚙️</span> Configurações</a>
+        </nav>
+        <div class="sidebar-footer">
+            <button onclick="logout()" class="btn-logout">Sair</button>
+        </div>
+    </aside>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="main-content">
+        <header class="page-header">
+            <h1>📄 Importar NFe</h1>
+            <p class="text-muted">Importe notas fiscais da SEFAZ ou via upload de XML</p>
+        </header>
+
+        <!-- STATUS DO CERTIFICADO -->
+        <section class="card mb-3">
+            <div class="card-header">
+                Status da Integração SEFAZ
+            </div>
+            <div class="card-body">
+                <div class="status-grid">
+                    <div class="status-item">
+                        <span class="status-label">Certificado:</span>
+                        <span class="status-valor" id="status-certificado">Verificando...</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Senha:</span>
+                        <span class="status-valor" id="status-senha">Verificando...</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Ambiente:</span>
+                        <span class="status-valor" id="status-ambiente">-</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABAS -->
+        <div class="tabs-container mb-3">
+            <button class="tab-btn active" onclick="trocarAba('sefaz')">Consultar SEFAZ</button>
+            <button class="tab-btn" onclick="trocarAba('upload')">Upload de XML</button>
+        </div>
+
+        <!-- ABA SEFAZ -->
+        <section id="aba-sefaz" class="tab-content">
+            <div class="card mb-3">
+                <div class="card-header">
+                    Consultar NFe na SEFAZ
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-2">
+                        Busca todas as NFe destinadas ao CNPJ da Finco que ainda não foram baixadas.
+                    </p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Último NSU (para continuar busca)</label>
+                            <input type="text" id="ultimo-nsu" class="form-control" value="0" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">&nbsp;</label>
+                            <button class="btn btn-primary" onclick="consultarSefaz()" id="btn-consultar">
+                                🔍 Consultar SEFAZ
+                            </button>
+                        </div>
+                    </div>
+                    <div id="sefaz-resultado" class="mt-3" style="display: none;">
+                        <div class="alert alert-info">
+                            <strong>Último NSU:</strong> <span id="resultado-ult-nsu">-</span> | 
+                            <strong>Máximo NSU:</strong> <span id="resultado-max-nsu">-</span> |
+                            <strong>Documentos:</strong> <span id="resultado-total">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABA UPLOAD -->
+        <section id="aba-upload" class="tab-content" style="display: none;">
+            <div class="card mb-3">
+                <div class="card-header">
+                    Upload de Arquivos XML
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-2">
+                        Selecione um ou mais arquivos XML de NFe para importar.
+                    </p>
+                    <div class="upload-area" id="upload-area">
+                        <input type="file" id="input-xml" multiple accept=".xml" style="display: none;" onchange="processarUpload()">
+                        <div class="upload-content" onclick="document.getElementById('input-xml').click()">
+                            <span class="upload-icon">📁</span>
+                            <p>Clique para selecionar ou arraste os arquivos XML</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DOCUMENTOS ENCONTRADOS -->
+        <section class="card mb-3" id="secao-documentos" style="display: none;">
+            <div class="card-header">
+                <span>Documentos Encontrados</span>
+                <span id="contador-docs" class="text-muted">0 documentos</span>
+            </div>
+            <div class="card-body">
+                <!-- Opções de importação -->
+                <div class="form-row mb-3">
+                    <div class="form-group">
+                        <label class="form-label">Categoria Padrão</label>
+                        <select id="categoria-importar" class="form-control">
+                            <option value="OPERACIONAL" selected>Operacional</option>
+                            <option value="FINANCEIRO">Financeiro</option>
+                            <option value="INVESTIMENTO">Investimento</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Classificação Padrão</label>
+                        <select id="classificacao-importar" class="form-control">
+                            <option value="">Automática</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">&nbsp;</label>
+                        <button class="btn btn-success" onclick="importarSelecionados()">
+                            ✅ Importar Selecionados
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Tabela de documentos -->
+                <div class="tabela-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="check-todos" onchange="toggleTodos()"></th>
+                                <th>Tipo</th>
+                                <th>Nº NF</th>
+                                <th>Emitente/Destinatário</th>
+                                <th>Data Emissão</th>
+                                <th>Vencimento</th>
+                                <th class="text-right">Valor</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-documentos">
+                            <tr>
+                                <td colspan="8" class="text-center text-muted">Nenhum documento</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- LOG DE IMPORTAÇÃO -->
+        <section class="card" id="secao-log" style="display: none;">
+            <div class="card-header">
+                Log de Importação
+            </div>
+            <div class="card-body">
+                <div id="log-importacao" class="log-container"></div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/importar-nfe.js"></script>
+</body>
+</html>
