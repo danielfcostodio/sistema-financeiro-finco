@@ -4,7 +4,7 @@ Importa dados das planilhas existentes para o banco de dados
 """
 import pandas as pd
 from datetime import datetime, date
-from database import (
+from backend.database import (
     SessionLocal, criar_tabelas, inicializar_configuracoes, 
     inicializar_classificacoes, Lancamento, Classificacao,
     ItemFornecedor, SaldoDiario, ResumoMensal, Configuracao
