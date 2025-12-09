@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema Financeiro Finco</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #00AE78, #00BAE2);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .login-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-logo img {
+            max-width: 180px;
+            height: auto;
+        }
+        
+        .login-titulo {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .login-form .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .login-form .form-label {
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .login-form .form-control {
+            padding: 14px;
+            font-size: 1rem;
+        }
+        
+        .login-form .btn {
+            width: 100%;
+            padding: 14px;
+            font-size: 1.1rem;
+            margin-top: 10px;
+        }
+        
+        .login-erro {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .login-erro.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-logo">
+            <img src="assets/logo-finco.png" alt="Finco">
+        </div>
+        
+        <h1 class="login-titulo">Sistema Financeiro</h1>
+        
+        <div class="login-erro" id="login-erro">
+            Usuário ou senha incorretos
+        </div>
+        
+        <form class="login-form" onsubmit="fazerLogin(event)">
+            <div class="form-group">
+                <label class="form-label">Usuário</label>
+                <input type="text" id="usuario" class="form-control" placeholder="Digite seu usuário" required autofocus>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Senha</label>
+                <input type="password" id="senha" class="form-control" placeholder="Digite sua senha" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" id="btn-login">
+                Entrar
+            </button>
+        </form>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:8000/api';
+        
+        // Verificar se já está logado
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                window.location.href = 'index.html';
+            }
+        });
+        
+        async function fazerLogin(event) {
+            event.preventDefault();
+            
+            const usuario = document.getElementById('usuario').value;
+            const senha = document.getElementById('senha').value;
+            const btnLogin = document.getElementById('btn-login');
+            const erroDiv = document.getElementById('login-erro');
+            
+            btnLogin.disabled = true;
+            btnLogin.textContent = 'Entrando...';
+            erroDiv.classList.remove('show');
+            
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: usuario, senha: senha })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('usuario', data.usuario);
+                    window.location.href = 'index.html';
+                } else {
+                    erroDiv.textContent = data.detail || 'Usuário ou senha incorretos';
+                    erroDiv.classList.add('show');
+                }
+                
+            } catch (error) {
+                console.error('Erro ao fazer login:', error);
+                erroDiv.textContent = 'Erro ao conectar com o servidor';
+                erroDiv.classList.add('show');
+            } finally {
+                btnLogin.disabled = false;
+                btnLogin.textContent = 'Entrar';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluxo de Caixa - Sistema Financeiro Finco</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/auth.js"></script>
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <img src="assets/logo-finco.png" alt="Finco" class="header-logo">
+        <h1 class="header-titulo">Sistema Financeiro</h1>
+        <div class="header-busca">
+            <input type="text" id="busca-global" class="busca-input" placeholder="Buscar lançamentos..." onkeypress="if(event.key==='Enter') buscarGlobal()">
+            <button class="btn btn-sm btn-primary" onclick="buscarGlobal()">Buscar</button>
+        </div>
+        <div class="header-user">
+            <span id="usuario-logado">Admin</span>
+            <button class="btn btn-sm btn-secondary" onclick="fazerLogout()" title="Sair">Sair</button>
+        </div>
+    </header>
+
+    <!-- NAVEGAÇÃO -->
+    <nav class="nav-menu">
+        <ul>
+            <li><a href="index.html">Dashboard</a></li>
+            <li><a href="lancamentos.html">Lançamentos</a></li>
+            <li><a href="contas.html">Contas</a></li>
+            <li><a href="fluxo-caixa.html" class="active">Fluxo de Caixa</a></li>
+            <li><a href="relatorios.html">Relatórios</a></li>
+            <li><a href="configuracoes.html">Configurações</a></li>
+        </ul>
+    </nav>
+
+    <!-- CONTAINER PRINCIPAL -->
+    <main class="container">
+        <div id="alerta-container"></div>
+
+        <!-- TÍTULO -->
+        <div class="d-flex justify-between align-center mb-2">
+            <h2>Fluxo de Caixa</h2>
+        </div>
+
+        <!-- FILTROS -->
+        <section class="filtros-container">
+            <div class="filtros-grid">
+                <div class="form-group">
+                    <label class="form-label">Ano</label>
+                    <select id="filtro-ano" class="form-control" onchange="carregarFluxoCaixa()">
+                        <option value="2025" selected>2025</option>
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                        <option value="2029">2029</option>
+                        <option value="2030">2030</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Mês</label>
+                    <select id="filtro-mes" class="form-control" onchange="carregarFluxoCaixa()">
+                        <option value="1">Janeiro</option>
+                        <option value="2">Fevereiro</option>
+                        <option value="3">Março</option>
+                        <option value="4">Abril</option>
+                        <option value="5">Maio</option>
+                        <option value="6">Junho</option>
+                        <option value="7">Julho</option>
+                        <option value="8">Agosto</option>
+                        <option value="9">Setembro</option>
+                        <option value="10">Outubro</option>
+                        <option value="11">Novembro</option>
+                        <option value="12">Dezembro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">&nbsp;</label>
+                    <button class="btn btn-primary" onclick="exportarFluxoExcel()">Exportar Excel</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- RESUMO DO MÊS -->
+        <section class="indicadores-grid-4 mb-3">
+            <div class="indicador-card">
+                <div class="indicador-label">Saldo Inicial</div>
+                <div class="indicador-valor" id="saldo-inicial">R$ --</div>
+            </div>
+            <div class="indicador-card">
+                <div class="indicador-label">Total Entradas</div>
+                <div class="indicador-valor positivo" id="total-entradas">R$ --</div>
+            </div>
+            <div class="indicador-card">
+                <div class="indicador-label">Total Saídas</div>
+                <div class="indicador-valor negativo" id="total-saidas">R$ --</div>
+            </div>
+            <div class="indicador-card destaque">
+                <div class="indicador-label">Saldo Final</div>
+                <div class="indicador-valor" id="saldo-final">R$ --</div>
+            </div>
+        </section>
+
+        <!-- TABELA FLUXO DIÁRIO -->
+        <section class="card">
+            <div class="card-header">
+                <span>Movimentações Baixadas</span>
+                <span id="contador-fluxo" class="text-muted">0 registros</span>
+            </div>
+            <div class="card-body">
+                <div class="tabela-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Tipo</th>
+                                <th>Categoria</th>
+                                <th>Classificação</th>
+                                <th>Item/Fornecedor</th>
+                                <th class="text-right">Entrada</th>
+                                <th class="text-right">Saída</th>
+                                <th class="text-right">Saldo Acumulado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-fluxo">
+                            <tr>
+                                <td colspan="8" class="text-center">Carregando...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/fluxo-caixa.js"></script>
+</body>
+</html>
