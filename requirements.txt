@@ -6,3 +6,4 @@ openpyxl>=3.1.2
 python-multipart>=0.0.6
 pydantic>=2.6.0
 aiofiles>=23.2.1
+requests-pkcs12>=1.14
