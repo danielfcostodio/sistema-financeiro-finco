@@ -10,7 +10,7 @@ from sqlalchemy import func, and_, extract
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import date, datetime
-from database import (
+from backend.database import (
     get_db, criar_tabelas, inicializar_configuracoes, inicializar_classificacoes,
     Lancamento, Classificacao, ItemFornecedor, SaldoDiario, ResumoMensal, 
     Configuracao, Usuario, SessionLocal
